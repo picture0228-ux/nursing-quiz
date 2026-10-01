@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>成人看護学・数値マスター Complete Edition</title>
+  <style>
+    :root {
+      --primary-color: #e91e63;
+      --primary-hover: #c2185b;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --correct-color: #4caf50;
+      --incorrect-color: #f44336;
+      --border-radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #fff4f8 0%, #f8f9fa 100%);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .quiz-container {
+      background-color: var(--card-bg);
+      width: 100%;
+      max-width: 520px;
+      border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .header {
+      border-bottom: 2px solid #f2f2f2;
+      padding-bottom: 12px;
+    }
+
+    .header h1 {
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      color: var(--primary-color);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      line-height: 1.3;
+    }
+
+    .badge {
+      background: #fce4ec;
+      color: #c2185b;
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background-color: #e9ecef;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary-color), #ff5a9b);
+      transition: width 0.25s ease;
+    }
+
+    .stats-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: #666;
+      margin-top: 8px;
+      gap: 12px;
+    }
+
+    .question-card {
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.5;
+      min-height: 60px;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-btn {
+      background-color: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: var(--border-radius);
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      font-weight: 500;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background-color: #f0f0f0;
+      border-color: #cfcfcf;
+      transform: translateY(-1px);
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    .option-btn.correct {
+      background-color: #e8f5e9;
+      border-color: var(--correct-color);
+      color: #2e7d32;
+      font-weight: 700;
+    }
+
+    .option-btn.incorrect {
+      background-color: #ffebee;
+      border-color: var(--incorrect-color);
+      color: #c62828;
+      font-weight: 700;
+    }
+
+    .explanation {
+      background-color: #fff8e1;
+      border-left: 4px solid #ffb300;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      display: none;
+    }
+
+    .action-btn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      padding: 13px 16px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+      width: 100%;
+    }
+
+    .action-btn:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .result-screen {
+      text-align: center;
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      padding: 8px 0 4px;
+    }
+
+    .result-screen h2 {
+      font-size: 1.35rem;
+    }
+
+    .score-circle {
+      width: 118px;
+      height: 118px;
+      border-radius: 50%;
+      background: #fce4ec;
+      border: 4px solid var(--primary-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--primary-color);
+    }
+
+    @media (max-width: 420px) {
+      .quiz-container {
+        padding: 16px;
+      }
+
+      .option-btn {
+        font-size: 0.9rem;
+        padding: 11px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div class="header">
+      <h1>🩺 成人看護数値マスター <span class="badge">全20問</span></h1>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="stats-info">
+        <span id="questionCount">第 1 / 20 問</span>
+        <span id="scoreText">正解数: 0</span>
+      </div>
+    </div>
+
+    <div id="quizScreen">
+      <div class="question-card" id="questionText">問題文がここに表示されます</div>
+      <div class="options-grid" id="optionsContainer"></div>
+      <div class="explanation" id="explanationText">解説がここに表示されます。</div>
+      <button class="action-btn" id="nextBtn" style="display:none;" onclick="nextQuestion()">次の問題へ</button>
+    </div>
+
+    <div class="result-screen" id="resultScreen">
+      <h2>学習お疲れ様でした！</h2>
+      <div class="score-circle" id="finalScore">0%</div>
+      <p id="resultComment">全問マスター目指して繰り返し解いてみましょう！</p>
+      <button class="action-btn" onclick="restartQuiz()">もう一度最初から解く</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "「国民健康・栄養調査(令和5年)」における20歳以上男性の肥満者(BMI≥25)の割合はどれか？",
+        options: ["21.1%", "24.4%", "31.5%", "35.0%"],
+        answer: 2,
+        explanation: "男性の肥満者割合は【31.5%】です（60〜69歳が最多の35.0%）。"
+      },
+      {
+        question: "「国民健康・栄養調査(令和5年)」における20歳以上女性の肥満者(BMI≥25)の割合はどれか？",
+        options: ["12.0%", "21.1%", "25.0%", "31.5%"],
+        answer: 1,
+        explanation: "女性の肥満者割合は【21.1%】です（60〜69歳が最多の25.0%）。"
+      },
+      {
+        question: "男性の肥満者(BMI≥25)で最も割合が高い年齢階級(35.0%)はどれか？",
+        options: ["30〜39歳", "40〜49歳", "50〜59歳", "60〜69歳"],
+        answer: 3,
+        explanation: "男性・女性ともに肥満者割合は【60〜69歳】が最多です（男性35.0%、女性25.0%）。"
+      },
+      {
+        question: "「国民健康・栄養調査(令和5年)」における20歳以上男性の低体重(痩せ: BMI<18.5)の割合はどれか？",
+        options: ["4.4%", "12.0%", "15.7%", "24.4%"],
+        answer: 0,
+        explanation: "男性のやせの割合は【4.4%】です。"
+      },
+      {
+        question: "「国民健康・栄養調査(令和5年)」における20歳以上女性の低体重(痩せ: BMI<18.5)の割合はどれか？",
+        options: ["4.4%", "12.0%", "21.1%", "24.4%"],
+        answer: 1,
+        explanation: "女性全体のやせの割合は【12.0%】です。"
+      },
+      {
+        question: "「国民健康・栄養調査(令和5年)」における『20代女性』の低体重(痩せ: BMI<18.5)の割合はどれか？",
+        options: ["12.0%", "15.7%", "21.1%", "24.4%"],
+        answer: 3,
+        explanation: "【マーカー箇所】20代女性のやせ割合は【24.4%】と約4人に1人にのぼり、課題となっています。"
+      },
+      {
+        question: "肥満の何%が「単純性肥満（摂取エネルギー＞消費エネルギー）」とされるか？",
+        options: ["50%", "75%", "90%", "95%"],
+        answer: 3,
+        explanation: "肥満の【95%】は過食や運動不足による「単純性肥満」です。"
+      },
+      {
+        question: "肥満者が糖尿病、心疾患、痛風などを有する割合は正常体重者の何倍か？",
+        options: ["1.5倍", "2〜3倍", "5倍", "10倍"],
+        answer: 1,
+        explanation: "肥満者は正常体重者と比べて【2〜3倍】のリスクがあります。"
+      },
+      {
+        question: "生活習慣病のリスクを高める量を飲酒している者の割合で、正しい組み合わせはどれか？",
+        options: ["男性 14.1% / 女性 9.5%", "男性 21.1% / 女性 12.0%", "男性 31.5% / 女性 21.1%", "男性 15.7% / 女性 11.7%"],
+        answer: 0,
+        explanation: "【マーカー箇所】生活習慣病のリスクを高める量を飲酒している割合は【男性 14.1%、女性 9.5%】です。"
+      },
+      {
+        question: "2017(平成29)年時点で、アルコール依存症として診断されている人数はどれか？",
+        options: ["2万人", "4万6千人", "10万人", "35万人"],
+        answer: 1,
+        explanation: "【マーカー箇所】アルコール依存症として診断されている人は【4万6千人】です（未受診・未治療の者も多く存在すると推定されています）。"
+      },
+      {
+        question: "「国民健康・栄養調査」における、1日の平均睡眠時間が「6時間以上7時間未満」の人の割合はどれか？",
+        options: ["24.4%", "30.9%", "34.5%", "42.1%"],
+        answer: 2,
+        explanation: "1日の平均睡眠時間が6時間以上7時間未満の割合は【34.5%】です。"
+      },
+      {
+        question: "30代男性において、睡眠確保の妨げになっている理由として最多（42.1%）のものはどれか？",
+        options: ["育児", "仕事", "就寝前のスマホ・ゲーム", "特になし"],
+        answer: 1,
+        explanation: "30〜50代男性の主な阻害理由は【仕事】（30代男性で42.1%）です。"
+      },
+      {
+        question: "20代男女において、睡眠確保の妨げになっている理由として「40%超」を占めるものはどれか？",
+        options: ["仕事", "育児", "就寝前の携帯電話・ゲーム熱中", "騒音"],
+        answer: 2,
+        explanation: "20代男女では【就寝前に携帯電話、メール、ゲームなどに熱中すること】が40%超となっています。"
+      },
+      {
+        question: "30代女性において、睡眠確保の妨げになっている理由として「30.9%」を占めるものはどれか？",
+        options: ["仕事", "育児", "家事", "スマホの利用"],
+        answer: 1,
+        explanation: "30代女性では【育児】が30.9%を占めています。"
+      },
+      {
+        question: "「国民健康・栄養調査(令和5年)」における、成人の1日の「平均食塩摂取量」はどれか？",
+        options: ["6.5g", "7.5g", "9.8g", "10.7g"],
+        answer: 2,
+        explanation: "1日の平均食塩摂取量は【9.8g】（男性10.7g、女性9.1g）です。"
+      },
+      {
+        question: "男性における1日の「食塩摂取量の平均値」はどれか？",
+        options: ["7.5g", "9.1g", "9.8g", "10.7g"],
+        answer: 3,
+        explanation: "男性の平均食塩摂取量は【10.7g】です。"
+      },
+      {
+        question: "女性における1日の「食塩摂取量の平均値」はどれか？",
+        options: ["6.5g", "7.5g", "9.1g", "9.8g"],
+        answer: 2,
+        explanation: "女性の平均食塩摂取量は【9.1g】です。"
+      },
+      {
+        question: "1日の「食塩摂取目標量」の正しい組み合わせはどれか？",
+        options: ["男性 7.5g未満 / 女性 6.5g未満", "男性 8.0g未満 / 女性 7.0g未満", "男性 10.7g未満 / 女性 9.1g未満", "男性 6.0g未満 / 女性 5.0g未満"],
+        answer: 0,
+        explanation: "【マーカー箇所】目標量は【男性 7.5g未満、女性 6.5g未満】です。"
+      },
+      {
+        question: "1日の「野菜摂取量」の平均値(256.0g)に対して設定されている「目標値」はどれか？",
+        options: ["200g", "300g", "350g", "400g"],
+        answer: 2,
+        explanation: "【マーカー箇所】野菜摂取量の目標値は【350g】です。"
+      },
+      {
+        question: "「朝食の欠食率」の正しい組み合わせ（男性 / 女性）はどれか？",
+        options: ["男性 11.7% / 女性 15.7%", "男性 14.1% / 女性 9.5%", "男性 15.7% / 女性 11.7%", "男性 24.4% / 女性 12.0%"],
+        answer: 2,
+        explanation: "朝食の欠食率は【男性 15.7%、女性 11.7%】で、男女ともに20代に多くみられます。"
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    function loadQuestion() {
+      answered = false;
+      const q = questions[currentQuestionIndex];
+      document.getElementById("questionText").innerText = q.question;
+      document.getElementById("questionCount").innerText = `第 ${currentQuestionIndex + 1} / ${questions.length} 問`;
+
+      const progressPercent = (currentQuestionIndex / questions.length) * 100;
+      document.getElementById("progressFill").style.width = `${progressPercent}%`;
+
+      const container = document.getElementById("optionsContainer");
+      container.innerHTML = "";
+
+      document.getElementById("explanationText").style.display = "none";
+      document.getElementById("nextBtn").style.display = "none";
+
+      q.options.forEach((opt, index) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerHTML = `<span>${opt}</span>`;
+        btn.onclick = () => selectOption(index);
+        container.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIndex) {
+      if (answered) return;
+      answered = true;
+
+      const q = questions[currentQuestionIndex];
+      const buttons = document.querySelectorAll(".option-btn");
+
+      buttons.forEach((btn, index) => {
+        btn.disabled = true;
+        if (index === q.answer) {
+          btn.classList.add("correct");
+        } else if (index === selectedIndex) {
+          btn.classList.add("incorrect");
+        }
+      });
+
+      if (selectedIndex === q.answer) {
+        score++;
+        document.getElementById("scoreText").innerText = `正解数: ${score}`;
+      }
+
+      const exp = document.getElementById("explanationText");
+      exp.innerText = q.explanation;
+      exp.style.display = "block";
+      document.getElementById("nextBtn").style.display = "block";
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      document.getElementById("quizScreen").style.display = "none";
+      document.getElementById("resultScreen").style.display = "flex";
+      document.getElementById("progressFill").style.width = "100%";
+
+      const percentage = Math.round((score / questions.length) * 100);
+      document.getElementById("finalScore").innerText = `${percentage}%`;
+
+      let comment = "もう一度復習して数値を完璧に覚えましょう！";
+      if (percentage === 100) {
+        comment = "完璧です！令和5年国民健康・栄養調査の数値データはマスターしました！";
+      } else if (percentage >= 80) {
+        comment = "素晴らしい！あと一歩で全問正解です！";
+      }
+
+      document.getElementById("resultComment").innerText = comment;
+    }
+
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      document.getElementById("scoreText").innerText = "正解数: 0";
+      document.getElementById("quizScreen").style.display = "block";
+      document.getElementById("resultScreen").style.display = "none";
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
